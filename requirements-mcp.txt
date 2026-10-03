@@ -1,0 +1,2 @@
+openbrowser-broker @ git+https://github.com/floomhq/openbrowser.git@main
+mcp>=1.15,<2
