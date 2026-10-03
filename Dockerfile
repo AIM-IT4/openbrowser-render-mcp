@@ -16,7 +16,9 @@ RUN git clone --depth=1 https://github.com/floomhq/openbrowser.git . \
     && pip install -e . \
     && playwright install --with-deps chromium
 
-RUN mkdir -p /data/openbrowser-broker /data/openbrowser-pool
+COPY start_openbrowser.sh /usr/local/bin/start-openbrowser
+RUN chmod +x /usr/local/bin/start-openbrowser \
+    && mkdir -p /data/openbrowser-broker /data/openbrowser-pool /data/openbrowser-authenticated
 
 EXPOSE 10000
-CMD ["openbrowser-broker"]
+CMD ["/usr/local/bin/start-openbrowser"]
