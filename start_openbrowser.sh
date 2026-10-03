@@ -10,16 +10,13 @@ mkdir -p "$BROKER_ROOT" "$POOL_DIR" "$BROKER_ROOT/logs"
 rm -rf "$BROKER_ROOT/browser_pool"
 cp -a /opt/openbrowser/browser_pool "$BROKER_ROOT/browser_pool"
 
-# Use the Chromium binary installed by Playwright in this image.
-OPENBROWSER_CHROME_BIN="$(python - <<'PY'
-from playwright.sync_api import sync_playwright
-p = sync_playwright().start()
-try:
-    print(p.chromium.executable_path)
-finally:
-    p.stop()
-PY
-)"
+# Resolve the Chromium binary installed during the Docker build without
+# starting a Playwright driver process.
+OPENBROWSER_CHROME_BIN="$(find /root/.cache/ms-playwright -type f -path '*/chrome-linux64/chrome' -print -quit)"
+if [[ -z "$OPENBROWSER_CHROME_BIN" ]]; then
+  echo "Playwright Chromium binary not found" >&2
+  exit 1
+fi
 export OPENBROWSER_CHROME_BIN
 
 echo "Starting OpenBrowser Chrome pool with $OPENBROWSER_CHROME_BIN"
